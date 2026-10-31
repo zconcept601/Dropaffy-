@@ -1,0 +1,405 @@
+html
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DropAffy - Réseau Commercial Digital</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Masquer la barre de défilement tout en gardant le scroll fonctionnel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Animation douce pour les interactions touch */
+    .active-scale {
+      transition: transform 0.15s ease, shadow 0.15s ease;
+    }
+    .active-scale:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col justify-center items-center font-sans antialiased bg-slate-200 text-slate-800 p-0 sm:p-4">
+
+  <!-- Contrôles du simulateur d'écran (pour test desktop/mobile) -->
+  <div class="hidden sm:flex items-center gap-3 mb-4 bg-white px-4 py-2 rounded-full shadow-sm text-xs font-medium text-slate-600">
+    <span class="flex items-center gap-1.5"><i data-lucide="smartphone" class="w-4 h-4 text-brand-600"></i> Mode App Mobile</span>
+    <span class="text-slate-300">|</span>
+    <button id="toggleDeviceBtn" onclick="toggleDeviceView()" class="hover:text-brand-600 transition-colors flex items-center gap-1">
+      <i data-lucide="monitor" class="w-4 h-4"></i> Affichage plein écran
+    </button>
+  </div>
+
+  <!-- Conteneur Frame Smartphone (Mobile First) -->
+  <div id="appContainer" class="w-full max-w-md h-full sm:h-[844px] bg-white sm:rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative border-0 sm:border-[8px] sm:border-slate-900 transition-all duration-300">
+    
+    <!-- En-tête mobile de DropAffy (Header Fixe) -->
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+      <!-- Logo DropAffy -->
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-brand-800 flex items-center justify-center text-white shadow-md shadow-brand-800/20">
+          <i data-lucide="network" class="w-5 h-5"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-lg leading-tight tracking-tight text-slate-900">Drop<span class="text-brand-600">Affy</span></span>
+          <span class="text-[9px] uppercase tracking-wider font-semibold text-slate-400">Réseau Pro • BF</span>
+        </div>
+      </div>
+
+      <!-- Actions Droite (Notifications + Profil) -->
+      <div class="flex items-center gap-2">
+        <!-- Notification Button -->
+        <button onclick="openModal('Notifications', 'Vous avez 2 nouvelles notifications de réseau et opportunités.')" class="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-600 transition-colors active-scale">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <!-- Profil Button -->
+        <button onclick="setActiveTab('profil')" class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-medium text-sm overflow-hidden active-scale">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profil" class="w-full h-full object-cover" onerror="this.remove()">
+          <span class="text-xs font-bold text-brand-800">DA</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Zone principale scrollable -->
+    <main id="mainContent" class="flex-1 overflow-y-auto no-scrollbar px-4 pt-4 pb-24 space-y-4">
+
+      <!-- Section Message de Bienvenue -->
+      <div class="bg-gradient-to-br from-brand-800 to-brand-900 text-white p-5 rounded-2xl shadow-sm relative overflow-hidden">
+        <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
+          <i data-lucide="globe" class="w-36 h-36"></i>
+        </div>
+        <div class="relative z-10">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/10 text-brand-100 mb-2 backdrop-blur-sm border border-white/10">
+            <i data-lucide="map-pin" class="w-3 h-3"></i> Burkina Faso & Afrique de l'Ouest
+          </span>
+          <h1 class="text-xl font-bold tracking-tight text-white mb-1">Bienvenue sur DropAffy !</h1>
+          <p class="text-sm text-brand-100 font-normal leading-relaxed">Votre réseau d'opportunités commerciales.</p>
+        </div>
+      </div>
+
+      <!-- Carte Compteur de Visiteurs en Ligne (Dynamique) -->
+      <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span class="text-xs font-medium text-slate-500">Visiteurs actuellement en ligne</span>
+            </div>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <span id="visitorCount" class="text-2xl font-black text-slate-900 tracking-tight transition-all duration-300">128</span>
+              <span class="text-[10px] text-slate-400 font-mono" title="Connecté au système de mesure temps réel">LIVE API</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[11px] font-semibold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-100">Actif</span>
+        </div>
+      </div>
+
+      <!-- Grille des fonctionnalités (2 Colonnes) -->
+      <div>
+        <div class="flex items-center justify-between mb-3 px-1">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Services & Opportunités</h2>
+          <span class="text-xs text-slate-400">10 fonctionnalités</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          
+          <!-- 1. PRODUITS -->
+          <button onclick="openModal('PRODUITS', 'Découvrez des catalogues de marchandises, stocks en gros et opportunités de vente directe au Burkina Faso.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-colors">
+              <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">PRODUITS</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Découvrir les produits et opportunités de vente.</span>
+          </button>
+
+          <!-- 2. IMMOBILIER -->
+          <button onclick="openModal('IMMOBILIER', 'Explorez les offres de terrains, locaux commerciaux, entrepôts et bureaux disponibles.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">IMMOBILIER</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Découvrir les offres immobilières.</span>
+          </button>
+
+          <!-- 3. SERVICES -->
+          <button onclick="openModal('SERVICES', 'Trouvez des prestataires qualifiés, sous-traitants et experts techniques pour vos projets.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+              <i data-lucide="briefcase" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">SERVICES</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Accéder aux offres de services.</span>
+          </button>
+
+          <!-- 4. RECHERCHER -->
+          <button onclick="openModal('RECHERCHER', 'Exprimez votre besoin ou lancez un appel d’offres ciblé au réseau DropAffy.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-3 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+              <i data-lucide="search" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">RECHERCHER</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Publier un besoin ou rechercher un partenaire.</span>
+          </button>
+
+          <!-- 5. PUBLIER UNE OFFRE (Subtilement mis en avant) -->
+          <button onclick="openModal('PUBLIER UNE OFFRE', 'Créez rapidement une fiche commerciale d’un produit, service ou bien immobilier.')" class="col-span-2 flex items-center gap-4 p-4 bg-brand-50/70 border border-brand-200 rounded-2xl shadow-xs hover:bg-brand-100/50 transition-all active-scale group">
+            <div class="w-11 h-11 rounded-xl bg-brand-800 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <i data-lucide="plus-circle" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-brand-900">PUBLIER UNE OFFRE</span>
+                <span class="text-[10px] bg-brand-800 text-white px-2 py-0.5 rounded-full font-medium">Action rapide</span>
+              </div>
+              <span class="text-xs text-brand-700/80 leading-tight block mt-0.5">Proposer un produit ou un service au réseau.</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-brand-600"></i>
+          </button>
+
+          <!-- 6. MES OFFRES -->
+          <button onclick="openModal('MES OFFRES', 'Consultez la liste de vos publications actives, modifiez ou suspendez vos offres.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">MES OFFRES</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Gérer ses offres et publications.</span>
+          </button>
+
+          <!-- 7. MES COMMANDES -->
+          <button onclick="openModal('MES COMMANDES', 'Suivi en temps réel des commandes en FCFA et des demandes reçues.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-3 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+              <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">MES COMMANDES</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Suivre les commandes et demandes.</span>
+          </button>
+
+          <!-- 8. MON RÉSEAU -->
+          <button onclick="setActiveTab('reseau')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <i data-lucide="users-2" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">MON RÉSEAU</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Accéder à son réseau commercial.</span>
+          </button>
+
+          <!-- 9. MESSAGERIE -->
+          <button onclick="openModal('MESSAGERIE', 'Vos échanges directs sécurisés avec les acheteurs et vendeurs partenaires.')" class="flex flex-col text-left p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group relative">
+            <span class="absolute top-3 right-3 flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-600"></span>
+            </span>
+            <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center mb-3 group-hover:bg-pink-600 group-hover:text-white transition-colors">
+              <i data-lucide="message-square" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-sm text-slate-900 mb-0.5">MESSAGERIE</span>
+            <span class="text-xs text-slate-500 line-clamp-2 leading-tight">Consulter les échanges et demandes.</span>
+          </button>
+
+          <!-- 10. MON COMPTE -->
+          <button onclick="setActiveTab('profil')" class="col-span-2 flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-200/70 shadow-xs hover:border-brand-500/40 transition-all active-scale group">
+            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:bg-slate-800 group-hover:text-white transition-colors">
+              <i data-lucide="user-cog" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 text-left">
+              <span class="font-bold text-sm text-slate-900 block">MON COMPTE</span>
+              <span class="text-xs text-slate-500">Gérer son profil professionnel et ses paramètres.</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Pied de carte informative discrète -->
+      <div class="pt-2 text-center">
+        <p class="text-[11px] text-slate-400 flex items-center justify-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-600"></i> Réseau commercial vérifié • Afrique de l'Ouest
+        </p>
+      </div>
+
+    </main>
+
+    <!-- Navigation Fixe en Bas (Bottom Nav Bar) -->
+    <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 py-2 z-20">
+      <div class="grid grid-cols-4 gap-1 max-w-sm mx-auto">
+        
+        <!-- Tab 1: Accueil -->
+        <button id="nav-accueil" onclick="setActiveTab('accueil')" class="flex flex-col items-center justify-center py-1 text-brand-800 transition-colors">
+          <i data-lucide="home" class="w-5 h-5"></i>
+          <span class="text-[10px] font-semibold mt-0.5">Accueil</span>
+        </button>
+
+        <!-- Tab 2: Explorer -->
+        <button id="nav-explorer" onclick="setActiveTab('explorer')" class="flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <i data-lucide="compass" class="w-5 h-5"></i>
+          <span class="text-[10px] font-medium mt-0.5">Explorer</span>
+        </button>
+
+        <!-- Tab 3: Réseau -->
+        <button id="nav-reseau" onclick="setActiveTab('reseau')" class="flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <i data-lucide="network" class="w-5 h-5"></i>
+          <span class="text-[10px] font-medium mt-0.5">Réseau</span>
+        </button>
+
+        <!-- Tab 4: Profil -->
+        <button id="nav-profil" onclick="setActiveTab('profil')" class="flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <i data-lucide="user" class="w-5 h-5"></i>
+          <span class="text-[10px] font-medium mt-0.5">Profil</span>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- Modal d'action / aperçu rapide (Feedback UI) -->
+    <div id="actionModal" class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-4 hidden transition-opacity">
+      <div class="bg-white rounded-2xl w-full max-w-xs p-5 shadow-2xl space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 id="modalTitle" class="font-bold text-slate-900 text-base">Titre</h3>
+          <button onclick="closeModal()" class="p-1 rounded-full text-slate-400 hover:bg-slate-100">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <p id="modalDescription" class="text-xs text-slate-600 leading-relaxed">
+          Description
+        </p>
+        <div class="pt-2 flex gap-2">
+          <button onclick="closeModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200 transition-colors">
+            Fermer
+          </button>
+          <button onclick="confirmAction()" class="flex-1 py-2.5 bg-brand-800 text-white rounded-xl text-xs font-semibold hover:bg-brand-900 transition-colors">
+            Ouvrir
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts d'Interactivité DropAffy -->
+  <script>
+    // Initialisation des icônes Lucide
+    lucide.createIcons();
+
+    // 1. Simulation dynamique du compteur de visiteurs (Temps Réel)
+    let currentVisitors = 128;
+    const visitorElement = document.getElementById('visitorCount');
+
+    function updateVisitorCount() {
+      // Fluctuation très subtile (-1, 0, ou +1) pour simuler l'activité
+      const variation = Math.floor(Math.random() * 3) - 1;
+      currentVisitors = Math.max(115, currentVisitors + variation);
+      
+      if (visitorElement) {
+        visitorElement.textContent = currentVisitors;
+        // Subtile effet d'animation visuel
+        visitorElement.classList.add('scale-105', 'text-brand-600');
+        setTimeout(() => {
+          visitorElement.classList.remove('scale-105', 'text-brand-600');
+        }, 300);
+      }
+    }
+
+    // Mise à jour toutes les 4 à 7 secondes
+    setInterval(updateVisitorCount, 5000);
+
+    // 2. Gestion des Modals interactives
+    function openModal(title, description) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalDescription').textContent = description;
+      document.getElementById('actionModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('actionModal').classList.add('hidden');
+    }
+
+    function confirmAction() {
+      const title = document.getElementById('modalTitle').textContent;
+      alert("Accès à la section : " + title + " (Module prêt pour intégration)");
+      closeModal();
+    }
+
+    // 3. Gestion de la Barre de Navigation Basse
+    function setActiveTab(tabName) {
+      const tabs = ['accueil', 'explorer', 'reseau', 'profil'];
+      
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`nav-${tab}`);
+        if (tab === tabName) {
+          btn.className = "flex flex-col items-center justify-center py-1 text-brand-800 transition-colors";
+          btn.querySelector('span').className = "text-[10px] font-semibold mt-0.5";
+        } else {
+          btn.className = "flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-600 transition-colors";
+          btn.querySelector('span').className = "text-[10px] font-medium mt-0.5";
+        }
+      });
+
+      if (tabName !== 'accueil') {
+        openModal(
+          tabName.toUpperCase(), 
+          `Navigation vers l'onglet ${tabName.charAt(0).toUpperCase() + tabName.slice(1)}. Section prête à recevoir du contenu dynamique.`
+        );
+      }
+    }
+
+    // 4. Mode simulateur Desktop / Mobile Full
+    let isMobileView = true;
+    function toggleDeviceView() {
+      const container = document.getElementById('appContainer');
+      const btn = document.getElementById('toggleDeviceBtn');
+      
+      if (isMobileView) {
+        container.classList.remove('sm:h-[844px]', 'sm:rounded-[40px]', 'sm:border-[8px]', 'max-w-md');
+        container.classList.add('max-w-4xl', 'h-full', 'rounded-none');
+        btn.innerHTML = `<i data-lucide="smartphone" class="w-4 h-4"></i> Vue Smartphone`;
+      } else {
+        container.classList.add('sm:h-[844px]', 'sm:rounded-[40px]', 'sm:border-[8px]', 'max-w-md');
+        container.classList.remove('max-w-4xl', 'h-full', 'rounded-none');
+        btn.innerHTML = `<i data-lucide="monitor" class="w-4 h-4"></i> Affichage plein écran`;
+      }
+      isMobileView = !isMobileView;
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
