@@ -21,3 +21,9 @@ npm run preview  # prévisualiser le build
 
 ## Non connecté pour l'instant
 Supabase, authentification, publications réelles, notifications, messages, pages Publier / Contacts / Activité / Profil.
+
+## Déployer sur GitHub Pages
+1. Placez le contenu de ce dossier à la racine du dépôt (`package.json` à la racine).
+2. Dépôt GitHub > Settings > Pages > Source : **GitHub Actions**.
+3. Chaque push sur `main` construit et publie le site (onglet Actions pour suivre).
+Le routage utilise `HashRouter` (adresses en `/#/...`) car GitHub Pages ne gère pas les routes côté serveur.
