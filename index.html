@@ -1,33 +1,13 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B1F4B">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="DropAffy">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>DropAffy</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
-<link rel="preconnect" href="https://fodmqtpaxygjoimuvvaw.supabase.co" crossorigin>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-</head><body>
-<div id="app"></div><div id="sheet" onclick="if(event.target==this)closeSheet()"></div><div id="toast" role="status"></div>
-<!-- Application membre : l'ordre des fichiers compte -->
-<script src="config.js?v=3"></script>
-<script src="lib.js?v=3"></script>
-<script src="ui.js?v=3"></script>
-<script src="auth.js?v=3"></script>
-<script src="home.js?v=3"></script>
-<script src="publish.js?v=3"></script>
-<script src="contacts.js?v=3"></script>
-<script src="messages.js?v=3"></script>
-<script src="activity.js?v=3"></script>
-<script src="profile.js?v=3"></script>
-<script src="notifications.js?v=3"></script>
-<script src="app.js?v=3"></script>
-</body></html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1F5BFF" />
+    <title>DropAffy</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
